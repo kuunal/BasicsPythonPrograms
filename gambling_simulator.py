@@ -7,7 +7,8 @@ def main():
         stake = int(input("Enter Stake Amount"))
         goal = int(input("Enter Goal Amount"))
     except ValueError:
-        print("Please provide valid details!")
+        print("Plese provide valid details!")
+        main()
     else:
         play(stake, goal, number_of_bets, number_of_wins)        
 

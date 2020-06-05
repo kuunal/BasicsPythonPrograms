@@ -10,31 +10,35 @@ def print_board():
     for position, value in enumerate(board):
         print(value ,end=' ') if position not in (2,5) else print(value)
     print()
+    print()
 
 def first_play():
-    input_choice = int(input("Enter toss(0,1): "))
     try:
+        input_choice = int(input("Enter toss(0,1): "))
         if input_choice not in (0,1):
             raise Exception("Please enter valid choice between 1 and 0!")
     except Exception:
             first_play()
     else:    
-        compute_turn(input_choice)        
+        random_number = round(random.random())
+        compute_turn(random_number,input_choice)        
 
-def compute_turn(input_choice):
-    global player,computer,turn_flag
-    randomNumber = round(random.random())
-    if randomNumber==input_choice:
-        print("You won the toss!")
-        user_choice=input("Please enter X or O!")
-        # if user_choice.upper not in ("X","O"):
-        #     raise Exception("Please enter valid choice!")
-        player = user_choice
-        if player == "X":
-            computer = "O"
-            turn_flag = "player"
+def compute_turn(random_number, input_choice):
+    global player,computer,turn_flag,number_of_moves
+    if random_number == input_choice:
+        try:
+            user_choice=input("Please enter X or O!")
+            if user_choice != "X" and user_choice.upper != "O" :
+                raise Exception("Please enter valid choice!")
+        except Exception:
+            compute_turn(random_number,input_choice)
         else:
-            computer = "X"
+            player = user_choice
+            if player == "X":
+                computer = "O"
+                turn_flag = "player"
+            else:
+                computer = "X"
     else:
         print("You lost the Toss!")
         computer = random.choice(["X","O"])
@@ -46,22 +50,26 @@ def compute_turn(input_choice):
 
 
 def play():
+    global player, computer, turn_flag, number_of_moves
     winner = check_win()
-    if winner != "":
+    if winner != "" :
         print(winner+ "won!" )
         return 
-    global player,computer,turn_flag
+    if number_of_moves == 0 :
+        print("Tie")
+        return
     if turn_flag == "player":
         try:
             location = int(input("Enter position"))
-            # if not re.search(location,"\d"):
-            #     raise Exception("Invalid location!")
+            if location > 8:
+                raise Exception("Invalid location!")
         except Exception:
             play()
         else:
             if board[location] == "-":
                 board[location] = player
                 turn_flag = "computer"
+                number_of_moves-=1
             else:
                 print("Please choose another location!") 
         print_board()
@@ -73,6 +81,7 @@ def play():
             board[location] = computer
             turn_flag = "player"
             print_board()
+            number_of_moves-=1
         play()
 
 def check_win():
@@ -111,11 +120,14 @@ def check_diagnols():
         return board[diagnols]
     return ""
 
+
+
 board = []
 turn_flag=""
 player=""
 computer=""
 winner=""
+number_of_moves=9
 reset()
 print_board()
 first_play()
